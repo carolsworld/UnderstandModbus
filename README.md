@@ -248,7 +248,58 @@ Exception codes provide a clear indication of errors in Modbus requests, helping
 
 ---
 
+### Importance of Modbus TCP Protocol
+
+The **Modbus TCP protocol** is an essential skill for every automation and controls engineer or technician. Its simplicity, reliability, and wide adoption in industrial settings make it a fundamental protocol to understand and implement in factory automation.
+
+### Step-by-Step Guide: Configuring Siemens S7-1500 PLC as a Modbus Server in TIA Portal
+
+This tutorial includes:
+
+- Setting up, programming and configuring a Siemens **S7-1500 PLC** in the **TIA Portal** as a Modbus **server**.
+- Using **Siemens PLCSIM Advanced v4.0** for advanced simulation and testing of Modbus configuration before deployment.
+- **Simenes NX**: A Digital Twin of conveyor belt acts as a Modbus server.
+- **Data Communication Over Modbus**: Reading and writing data over the Modbus network.
+
+1. **In the PLCSIM Advanced**:
+  - Enable the PLCSIM Virtual Eth. Adapter. TCP/IP communication with Ethernet. Set the instance name ModbusTCPTest, with IP Address set as the one set at the S7-1500 PLC in TIA portal, i.e. 192.168.0.10, 255.255.255.0. 
+
+2. **In the TIA Portal**:
+   - Select one of the **S7-1500 PLC** as your device.
+   - Right click project name under the project tree and select properties, then under protect tick the support simulation during block compilation.
+   - Navigate to **Device Configuration**. Locate the **Ethernet address** of the PLC and set it to `192.168.0.10`.
+   - Navigate to **Program blocks** and open **OB1 (Main)**. This is the main program block where the Modbus server configuration will be set up.
+   - Add the Modbus Server Instruction: On the right-hand side of TIA Portal, go to **Instructions**.
+   - Navigate to the **Communication** tab, then **Others**, and find **Modbus TCP**.
+   - Select **MB_SERVER** to add the Modbus server instruction to the program.
+   - Choose **Automatic** when prompted, then click **OK** to confirm the configuration. A single DB instance will be created to saves the dta.
+   - Create a new **Data Block** under the Program Blocks to store Modbus configuration parameters for smooth client-server communication.
+   - The Main OB1 will have the function block created and below is the descriptions of the related parameters
+      - **DISCONNECT**: Controls the connection to the Modbus server, allowing it to be established or terminated.
+      - **MB_HOLD_REG**: Points to the Modbus holding register accessed by the Modbus client.
+      - **NDR**: Indicates if new data has been written by the Modbus client (1 = new data, 0 = no new data).
+      - **DR**: Shows if data has been read by the Modbus client (1 = data read, 0 = no data read).
+      - **ERROR**: Sets to 1 if an error occurs during the MB_SERVER instruction call.
+      - **STATUS**: Provides detailed status information about the MB_SERVER instruction.
+      - **CONNECT**: Points to the connection structure (TCON_IPV4), defining the IP address for the server connection. 
+  - We need to create the modbus parameters by creating the Modbus database instance as a new Data Block.
+      - For the connect, setpoint has to be ticked.
+      - For interface ID, it could be found in Device configuration > System constants. Here, 64 is the HW-identifier of IE-interface submodule.
+      - The Local Port should be set to 502.
+      - For ID should be started at 16#1
+      - After putting the configuration, compile the data block. 
+  - We also need to create another new Data Block that will contain the Modbus data. Simply create array to store DATA_1 and DATA_2. On the project tree,for Modbus Data DB, select properties and uncheck the optimize block access under the attributes pane. This will enable you to use absolute addressing for this data block. After putting the configuration, compile the data block. After compilation, the Modbus_parameters data block will have offset pane.
+  - Finally, the Main OB1 block will have to be connected back to the Modbus parameter database. For the MB_Holding_Reg, it will be set to the absolute address structure P#DB3.DBX0.0 BYTE 62, which is Siemens's absolute addressing method. DB3 is the data block number of MODBUS DATA. DBX0.0 means that the starting data offset in DB3 0.0. BYTE 62 dictates the endpoint of our data which has the offset number 62.0
+
+3. After setting up step 2, download the PLC program. For PG/PC interface, select Simeens PLCSIM Virtual Ethernet Adapter, click search. The address 192.168.0.10 should be shown and click Load to proceed. It may ask you to create additional IP address. Go ahead.
+
+3. **In the Radzio Modbus Master Simulator**:
+
+- Configure the IP address to 192.168.0.10, port 502. Read 
+
 
 ### Reference
 
 https://www.solisplc.com/tutorials/modbus
+
+https://www.solisplc.com/tutorials/modbus-tcp-communications-in-siemens-tia-portal

@@ -136,8 +136,8 @@ While Modbus ASCII was once a popular choice, it has largely fallen out of use i
 
 - **Client-Server Architecture**:
   - Modbus TCP shifts from the traditional **Master-Slave** model to a **Client-Server** model:
-    - The **Master** (initiator of communication) is now called the **Client**.
-    - The **Slave** (responding device) is now referred to as the **Server**.
+    - The **Master** (initiator of communication) is now called the **Client**. For instance, OpenPLC Runtime and Siemens TIA portal running the PLC control logic and parameters are the master device or client, which send out instructions and requests.
+    - The **Slave** (responding device) is now referred to as the **Server**. For instance, Factory i/o software or Siemens NX are the slave device, which receive instruction.  
   - Supports **multiple clients and multiple servers**, leveraging **peer-to-peer communication** capabilities of Ethernet IP.
 
 - **Physical Connection**:
